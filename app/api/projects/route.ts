@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { projectFormSchema } from '@/lib/validation';
 
+export const dynamic = 'force-dynamic';
+
 // GET all projects
 export async function GET() {
   try {
