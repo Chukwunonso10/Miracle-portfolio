@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from './ThemeProvider';
 import { Menu, X, Sun, Moon, ArrowRight, LayoutDashboard } from 'lucide-react';
-import { useAuth, UserButton } from '@clerk/nextjs';
+import { useUser, UserButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_LINKS = [
@@ -19,9 +19,12 @@ const NAV_LINKS = [
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'kellymaxstudios@gmail.com';
+  const isAdmin = isSignedIn && user?.primaryEmailAddress?.emailAddress === adminEmail;
 
   // Track page scroll to toggle glass backdrop styling
   useEffect(() => {
@@ -100,26 +103,29 @@ export default function Navbar() {
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
-          {isSignedIn ? (
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
+            {isAdmin && (
               <Link
                 href="/admin"
-                className="flex items-center space-x-1.5 text-xs uppercase font-semibold text-primary hover:text-accent tracking-wider transition-colors"
+                className="flex items-center space-x-1.5 text-xs uppercase font-semibold text-primary hover:text-accent tracking-wider transition-colors mr-2"
               >
                 <LayoutDashboard size={14} />
                 <span>Dashboard</span>
               </Link>
+            )}
+
+            {isSignedIn ? (
               <UserButton />
-            </div>
-          ) : (
-            <Link
-              href="/contact"
-              className="px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-widest bg-gold-gradient text-zinc-950 hover:opacity-90 active:scale-95 transition-all flex items-center space-x-2"
-            >
-              <span>Book Session</span>
-              <ArrowRight size={12} className="mt-0.5" />
-            </Link>
-          )}
+            ) : (
+              <Link
+                href="/contact"
+                className="px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-widest bg-gold-gradient text-zinc-950 hover:opacity-90 active:scale-95 transition-all flex items-center space-x-2"
+              >
+                <span>Book Session</span>
+                <ArrowRight size={12} className="mt-0.5" />
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Mobile Nav Button */}
@@ -169,7 +175,7 @@ export default function Navbar() {
                 );
               })}
               
-              {isSignedIn ? (
+              {isAdmin && (
                 <Link
                   href="/admin"
                   className="flex items-center space-x-2 text-sm uppercase tracking-widest font-semibold text-primary pt-4 border-t border-border"
@@ -177,7 +183,9 @@ export default function Navbar() {
                   <LayoutDashboard size={16} />
                   <span>Admin Dashboard</span>
                 </Link>
-              ) : (
+              )}
+              
+              {!isAdmin && (
                 <Link
                   href="/contact"
                   className="w-full py-4 text-center rounded-full text-sm font-semibold uppercase tracking-widest bg-gold-gradient text-zinc-950 flex items-center justify-center space-x-2"

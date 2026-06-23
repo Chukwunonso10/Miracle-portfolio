@@ -185,7 +185,7 @@ export default function Footer() {
 
       {/* Underline and Credits */}
       <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between text-xs text-muted-foreground/60 space-y-4 md:space-y-0">
-        <p>&copy; {new Date().getFullYear()} Miracles Studio. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Kelly Max Studio. All rights reserved.</p>
         <p className="flex space-x-4">
           <a href="#" className="hover:underline">Privacy Policy</a>
           <a href="#" className="hover:underline">Terms of Service</a>
