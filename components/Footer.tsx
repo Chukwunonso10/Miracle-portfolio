@@ -124,6 +124,11 @@ export default function Footer() {
                 Contact & Booking
               </Link>
             </li>
+            <li className="pt-2 border-t border-border/40">
+              <Link href="/admin" className="text-xs text-muted-foreground/50 hover:text-primary transition-colors">
+                Admin Portal
+              </Link>
+            </li>
           </ul>
         </div>
 
