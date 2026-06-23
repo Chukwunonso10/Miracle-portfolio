@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String       @id @default(uuid())
+  email     String       @unique
+  name      String?
+  avatar    String?
+  role      Role         @default(USER)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  socials   SocialLink[]
+}
+
+model Category {
+  id        String             @id @default(uuid())
+  name      String             @unique
+  slug      String             @unique
+  projects  PortfolioProject[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model PortfolioProject {
+  id          String         @id @default(uuid())
+  title       String
+  slug        String         @unique
+  description String         @db.Text
+  content     String         @db.Text // Detailed markdown content
+  client      String?
+  role        String?
+  year        String?
+  url         String?        // Live project URL
+  isFeatured  Boolean        @default(false)
+  categoryId  String
+  category    Category       @relation(fields: [categoryId], references: [id])
+  images      ProjectImage[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([categoryId])
+}
+
+model ProjectImage {
+  id        String           @id @default(uuid())
+  url       String
+  key       String           // Media storage file key for deletion
+  isCover   Boolean          @default(false)
+  projectId String
+  project   PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+
+  @@index([projectId])
+}
+
+model Service {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  description  String   @db.Text
+  benefits     String[] // Array of service benefits
+  deliverables String[] // Array of deliverables
+  priceRange   String?  // Optional price range (e.g., "$500 - $1,500")
+  icon         String   // Lucide icon key name
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Testimonial {
+  id             String   @id @default(uuid())
+  clientName     String
+  clientRole     String
+  clientCompany  String?
+  clientAvatar   String?
+  testimonialText String   @db.Text
+  rating         Int      @default(5)
+  isFeatured     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SocialLink {
+  id        String   @id @default(uuid())
+  platform  String   // e.g. "Instagram", "LinkedIn", "YouTube", "Behance"
+  url       String
+  icon      String   // Lucide icon key
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model NewsletterSubscription {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

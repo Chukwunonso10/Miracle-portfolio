@@ -1,26 +1,166 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0908; /* Warm luxury charcoal-black matching the logo shadow details */
+  --foreground: #f5f4f0;
+  --card: #12100e; /* Slightly lighter warm charcoal for panels/cards */
+  --card-foreground: #f5f4f0;
+  --popover: #0a0908;
+  --popover-foreground: #f5f4f0;
+  --primary: #e07b00; /* Deep, rich orange-gold matching the logo's deep camera stroke */
+  --primary-foreground: #0a0908;
+  --secondary: #1e1b18;
+  --secondary-foreground: #f5f4f0;
+  --muted: #858076;
+  --muted-foreground: #b4ae9f;
+  --accent: #ff9900; /* Bright, vibrant amber-gold matching the logo's main typography highlights */
+  --accent-foreground: #0a0908;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f5f4f0;
+  --border: #221f1b; /* Dark warm borders */
+  --input: #221f1b;
+  --ring: #e07b00;
+  --radius: 0.75rem;
+
+  /* Gold Gradient Colors (Deeper logo matching) */
+  --gold-1: #ffd899; /* Rich honey-gold starting highlight */
+  --gold-2: #e07b00; /* Deep logo camera body gold */
+  --gold-3: #944d00; /* Deep bronze-brown shadow */
+}
+
+:root.light {
+  --background: #fbf9f6; /* Warm luxury alabaster off-white */
+  --foreground: #1c1a17; /* Deep warm charcoal/black */
+  --card: #ffffff; /* Pure white cards */
+  --card-foreground: #1c1a17;
+  --popover: #ffffff;
+  --popover-foreground: #1c1a17;
+  --primary: #b85c00; /* Richer, deep amber-gold for excellent contrast and readability */
+  --primary-foreground: #ffffff;
+  --secondary: #fef3e2; /* Soft warm amber cream-gold */
+  --secondary-foreground: #1c1a17;
+  --muted: #5e5c56; /* Warm charcoal for legible body text */
+  --muted-foreground: #7e7b73; /* readable secondary text in light mode */
+  --accent: #b85c00;
+  --accent-foreground: #ffffff;
+  --destructive: #fee2e2;
+  --destructive-foreground: #991b1b;
+  --border: #e6c599; /* Soft sand-gold border */
+  --input: #faf5eb; /* Soft warm cream input background */
+  --ring: #b85c00;
+
+  /* Gold Gradient Colors (Richer for light background contrast) */
+  --gold-1: #f3be7a; /* Medium amber gold */
+  --gold-2: #b85c00; /* Deep logo contrast gold */
+  --gold-3: #803c00; /* Deep warm shadow gold */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: rgba(18, 18, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:root.light .glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.glass-card {
+  background: rgba(18, 18, 20, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(24, 24, 28, 0.6);
+  border-color: rgba(197, 168, 128, 0.2);
+  transform: translateY(-2px);
+}
+
+:root.light .glass-card {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+:root.light .glass-card:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(184, 157, 112, 0.25);
+}
+
+/* Premium Gold Text Gradient */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold-1) 0%, var(--gold-2) 50%, var(--gold-3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(135deg, var(--gold-1) 0%, var(--gold-2) 50%, var(--gold-3) 100%);
+}
+
+/* Page transitions */
+.page-transition {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
