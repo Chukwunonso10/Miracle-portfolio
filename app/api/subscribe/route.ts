@@ -49,7 +49,7 @@ export async function POST(req: Request) {
           simulated: true,
           data: { email, createdAt: new Date().toISOString() },
         }, { status: 200 });
-        }
+
       }
 
   } catch (error) {
