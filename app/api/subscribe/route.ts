@@ -60,3 +60,21 @@ export async function POST(req: Request) {
     );
   }
 }
+export async function GET() {
+  try {
+    // If DB has no subscriptions, fall back to mock store
+    const count = await db.newsletterSubscription.count();
+    if (count === 0) {
+      const mockList = Array.from(mockSubscribedEmails).map((email) => ({ email }));
+      return NextResponse.json({ subscriptions: mockList }, { status: 200 });
+    }
+    // Real DB subscriptions
+    const subs = await db.newsletterSubscription.findMany({
+      select: { id: true, email: true, createdAt: true },
+    });
+    return NextResponse.json({ subscriptions: subs }, { status: 200 });
+  } catch (error) {
+    console.error('Failed to fetch newsletter subscriptions:', error);
+    return NextResponse.json({ message: 'An internal error occurred.' }, { status: 500 });
+  }
+}
