@@ -11,6 +11,8 @@ async function getServicesData() {
     const dbServices = await db.service.findMany({
       orderBy: { name: 'asc' }
     });
+
+
     if (dbServices.length > 0) {
       services = dbServices.map((s: any) => ({
         id: s.id,
@@ -23,6 +25,7 @@ async function getServicesData() {
         icon: s.icon,
       }));
     }
+
   } catch (error) {
     const errMessage = error instanceof Error ? error.message : String(error);
     console.warn('DB read failed for Services Manager, fallback triggered:', errMessage);
