@@ -58,7 +58,7 @@ export default function Footer() {
               className="h-10 w-auto object-contain rounded-md" 
             />
             <span className="text-2xl font-black tracking-widest text-gold-gradient uppercase">
-              KellyMax
+              Kelly Max
             </span>
           </Link>
           <p className="text-sm leading-relaxed text-muted-foreground max-w-xs">

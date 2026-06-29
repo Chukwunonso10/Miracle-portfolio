@@ -40,7 +40,7 @@ export default function CTA() {
             <ArrowRight size={14} />
           </Link>
           <a
-            href="https://wa.me/2348000000000"
+            href="https://wa.me/2348159248420"
             target="_blank"
             rel="noreferrer"
             className="w-full sm:w-auto px-8 py-4 rounded-full border border-border bg-background hover:bg-background/85 text-foreground font-bold uppercase tracking-widest text-xs active:scale-95 transition-all text-center flex items-center justify-center space-x-2"

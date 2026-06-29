@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+// In-memory store for mock mode when DB is offline
+const mockSubscribedEmails = new Set<string>();
 import { z } from 'zod';
 
 const subscribeSchema = z.object({
@@ -58,10 +60,14 @@ export async function POST(req: Request) {
       console.warn('Database write failed for newsletter subscription, mock execution triggered:', dbError);
       
       // Simulate success response when DB is offline
-      return NextResponse.json({ 
-        message: 'Mock Success (DB Offline)', 
+      if (mockSubscribedEmails.has(email)) {
+        return NextResponse.json({ message: 'This email is already subscribed (mock mode)!' }, { status: 400 });
+      }
+      mockSubscribedEmails.add(email);
+      return NextResponse.json({
+        message: 'Mock Success (DB Offline)',
         simulated: true,
-        data: { email, createdAt: new Date().toISOString() } 
+        data: { email, createdAt: new Date().toISOString() }
       }, { status: 200 });
     }
 

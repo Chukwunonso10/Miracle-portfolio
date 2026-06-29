@@ -9,7 +9,7 @@ export default function SignInPage() {
       
       <div className="relative z-10 w-full max-w-md flex flex-col items-center">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-extrabold text-gold-gradient tracking-tight mb-2">Miracles Studio</h1>
+          <h1 className="text-3xl font-extrabold text-gold-gradient tracking-tight mb-2">Kelly Max Studio</h1>
           <p className="text-sm text-zinc-400">Admin Authentication Portal</p>
         </div>
         
