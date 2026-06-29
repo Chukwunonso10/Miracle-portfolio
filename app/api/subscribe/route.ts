@@ -1,22 +1,12 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-// In-memory store for mock mode when DB is offline
-const mockSubscribedEmails = new Set<string>();
 import { z } from 'zod';
 
 const subscribeSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
 });
 
-// Helper to check if database is online
-async function isDbConnected(): Promise<boolean> {
-  try {
-    await db.$queryRaw`SELECT 1`;
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
+
 
 export async function POST(req: Request) {
   try {
@@ -33,42 +23,28 @@ export async function POST(req: Request) {
 
     const { email } = validation.data;
 
-    // Database write check
+    // Directly query the database for existing subscription
     try {
-      // Check if already subscribed if DB is active
-      const dbOnline = await isDbConnected();
-      if (dbOnline) {
-        const existing = await db.newsletterSubscription.findUnique({
-          where: { email },
-        });
-
-        if (existing) {
-          return NextResponse.json(
-            { message: 'This email is already subscribed!' },
-            { status: 400 }
-          );
-        }
-
-        const subscription = await db.newsletterSubscription.create({
-          data: { email },
-        });
-        return NextResponse.json({ message: 'Success', id: subscription.id }, { status: 200 });
-      } else {
-        throw new Error('Database is offline');
+      const existing = await db.newsletterSubscription.findUnique({
+        where: { email },
+      });
+      if (existing) {
+        return NextResponse.json({ message: 'This email is already subscribed!' }, { status: 400 });
       }
+      const subscription = await db.newsletterSubscription.create({
+        data: { email },
+      });
+      return NextResponse.json({ message: 'Success', id: subscription.id }, { status: 200 });
     } catch (dbError) {
-      console.warn('Database write failed for newsletter subscription, mock execution triggered:', dbError);
-      
-      // Simulate success response when DB is offline
-      if (mockSubscribedEmails.has(email)) {
-        return NextResponse.json({ message: 'This email is already subscribed (mock mode)!' }, { status: 400 });
+      // Prisma unique constraint violation (duplicate email)
+      if (dbError?.code === 'P2002') {
+        return NextResponse.json({ message: 'This email is already subscribed!' }, { status: 400 });
       }
-      mockSubscribedEmails.add(email);
-      return NextResponse.json({
-        message: 'Mock Success (DB Offline)',
-        simulated: true,
-        data: { email, createdAt: new Date().toISOString() }
-      }, { status: 200 });
+      console.error('Database error during newsletter subscription:', dbError);
+      return NextResponse.json(
+        { message: 'An internal error occurred. Please try again.' },
+        { status: 500 }
+      );
     }
 
   } catch (error) {
