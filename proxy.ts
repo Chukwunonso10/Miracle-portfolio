@@ -13,7 +13,7 @@ export default clerkMiddleware(async (auth, req) => {
     const client = await clerkClient();
     const user = await client.users.getUser(authObj.userId);
     const email = user.emailAddresses[0]?.emailAddress?.toLowerCase();
-    const adminEmailsStr = process.env.ADMIN_EMAIL || "kellymaxstudios@gmail.com";
+    const adminEmailsStr = process.env.ADMIN_EMAIL || "kuzuechinonsojude@gmail.com,kellymaxstudios@gmail.com";
     const adminEmails = adminEmailsStr.split(",").map((e) => e.trim().toLowerCase());
 
     if (!email || !adminEmails.includes(email)) {
