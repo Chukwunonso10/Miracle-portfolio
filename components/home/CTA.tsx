@@ -10,10 +10,10 @@ export default function CTA() {
     <section className="py-24 px-6 bg-background relative">
       {/* Decorative side light */}
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-      
+
       <div className="max-w-5xl mx-auto rounded-2xl bg-card border border-border p-8 sm:p-16 text-center space-y-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gold-gradient/2 opacity-[0.02]" />
-        
+
         <div className="space-y-4 relative z-10 max-w-2xl mx-auto">
           <h2 className="text-xs uppercase tracking-widest text-primary font-bold">Collaborations</h2>
           <h3 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight leading-tight">
