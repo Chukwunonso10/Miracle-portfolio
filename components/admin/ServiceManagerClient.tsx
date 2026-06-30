@@ -60,7 +60,13 @@ export default function ServiceManagerClient({ initialServices }: { initialServi
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this service?')) return;
     setServices(services.filter((s) => s.id !== id));
-    // Simulated delete endpoint call
+    try {
+      await fetch(`/api/services?id=${id}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {
+      console.error('Failed to delete service', e);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -68,7 +74,7 @@ export default function ServiceManagerClient({ initialServices }: { initialServi
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const payload = {
@@ -81,15 +87,38 @@ export default function ServiceManagerClient({ initialServices }: { initialServi
       icon: form.icon,
     };
 
-    if (editingService) {
-      setServices(
-        services.map((s) => (s.id === editingService.id ? { ...s, ...payload } : s))
-      );
-    } else {
-      setServices([
-        { id: Math.random().toString(), ...payload },
-        ...services,
-      ]);
+    try {
+      if (editingService) {
+        setServices(
+          services.map((s) => (s.id === editingService.id ? { ...s, ...payload } : s))
+        );
+
+        await fetch('/api/services', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingService.id, ...payload }),
+        });
+      } else {
+        const tempId = Math.random().toString();
+        setServices([
+          { id: tempId, ...payload },
+          ...services,
+        ]);
+
+        const res = await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const newService = await res.json();
+          setServices((prev) =>
+            prev.map((s) => (s.id === tempId ? newService : s))
+          );
+        }
+      }
+    } catch (err) {
+      console.error('Failed to save service', err);
     }
 
     setIsEditing(false);

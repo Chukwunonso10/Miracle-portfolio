@@ -61,9 +61,16 @@ export default function TestimonialManagerClient({
     setIsEditing(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this testimonial?')) return;
     setTestimonials(testimonials.filter((t) => t.id !== id));
+    try {
+      await fetch(`/api/testimonials?id=${id}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {
+      console.error('Failed to delete testimonial', e);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -81,7 +88,7 @@ export default function TestimonialManagerClient({
     setForm((prev) => ({ ...prev, [name]: checked }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const payload = {
@@ -94,15 +101,38 @@ export default function TestimonialManagerClient({
       isFeatured: form.isFeatured,
     };
 
-    if (editingTestimonial) {
-      setTestimonials(
-        testimonials.map((t) => (t.id === editingTestimonial.id ? { ...t, ...payload } : t))
-      );
-    } else {
-      setTestimonials([
-        { id: Math.random().toString(), ...payload },
-        ...testimonials,
-      ]);
+    try {
+      if (editingTestimonial) {
+        setTestimonials(
+          testimonials.map((t) => (t.id === editingTestimonial.id ? { ...t, ...payload } : t))
+        );
+
+        await fetch('/api/testimonials', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingTestimonial.id, ...payload }),
+        });
+      } else {
+        const tempId = Math.random().toString();
+        setTestimonials([
+          { id: tempId, ...payload },
+          ...testimonials,
+        ]);
+
+        const res = await fetch('/api/testimonials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const newTestimonial = await res.json();
+          setTestimonials((prev) =>
+            prev.map((t) => (t.id === tempId ? newTestimonial : t))
+          );
+        }
+      }
+    } catch (err) {
+      console.error('Failed to save testimonial', err);
     }
 
     setIsEditing(false);
