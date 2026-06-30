@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { projectFormSchema } from '@/lib/validation';
+import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,10 +56,14 @@ export async function POST(req: Request) {
           }
         }
       });
+      revalidatePath('/');
+      revalidatePath('/portfolio');
       return NextResponse.json(project, { status: 201 });
     } catch (dbError) {
       const errMessage = dbError instanceof Error ? dbError.message : String(dbError);
       console.warn('DB create project bypassed (offline):', errMessage);
+      revalidatePath('/');
+      revalidatePath('/portfolio');
       return NextResponse.json({ message: 'Mock created successfully', simulated: true }, { status: 201 });
     }
   } catch (error) {
@@ -114,10 +119,14 @@ export async function PUT(req: Request) {
           }
         }
       });
+      revalidatePath('/');
+      revalidatePath('/portfolio');
       return NextResponse.json(project, { status: 200 });
     } catch (dbError) {
       const errMessage = dbError instanceof Error ? dbError.message : String(dbError);
       console.warn('DB update project bypassed (offline):', errMessage);
+      revalidatePath('/');
+      revalidatePath('/portfolio');
       return NextResponse.json({ message: 'Mock updated successfully', simulated: true }, { status: 200 });
     }
   } catch (error) {
@@ -138,10 +147,14 @@ export async function DELETE(req: Request) {
 
     try {
       await db.portfolioProject.delete({ where: { id } });
+      revalidatePath('/');
+      revalidatePath('/portfolio');
       return NextResponse.json({ message: 'Deleted successfully' }, { status: 200 });
     } catch (dbError) {
       const errMessage = dbError instanceof Error ? dbError.message : String(dbError);
       console.warn('DB delete project bypassed (offline):', errMessage);
+      revalidatePath('/');
+      revalidatePath('/portfolio');
       return NextResponse.json({ message: 'Mock deleted successfully', simulated: true }, { status: 200 });
     }
   } catch (error) {
