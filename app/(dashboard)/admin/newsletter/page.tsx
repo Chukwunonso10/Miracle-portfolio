@@ -1,3 +1,4 @@
+// Fetch newsletter subscribers with explicit TypeScript type mapping
 import React from 'react';
 import NewsletterDashboardWrapper from '@/components/admin/NewsletterDashboardWrapper';
 import { db } from '@/lib/db';
