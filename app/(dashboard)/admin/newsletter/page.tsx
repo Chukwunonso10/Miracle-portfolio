@@ -8,7 +8,7 @@ async function getNewsletterSubscribers() {
       select: { id: true, email: true, createdAt: true },
       orderBy: { createdAt: 'desc' }
     });
-    return subs.map(sub => ({
+    return subs.map((sub: { id: string; email: string; createdAt: Date }) => ({
       ...sub,
       createdAt: sub.createdAt.toISOString()
     }));
