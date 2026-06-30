@@ -24,18 +24,30 @@ export default function Footer() {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (!response.ok) {
+        // Try to read error message from JSON, fallback to text
+        let errorMsg = 'Subscription failed.';
+        try {
+          const errData = await response.clone().json();
+          errorMsg = errData.message || errorMsg;
+        } catch (_) {
+          const errText = await response.text();
+          errorMsg = errText || errorMsg;
+        }
+        setMessage(errorMsg);
+      } else {
+        const data = await response.json();
         setSubscribed(true);
         setEmail('');
         setMessage('Thank you for subscribing!');
+        // Notify dashboard to refresh data
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('newsletter-updated'));
+        }
         setTimeout(() => {
           setSubscribed(false);
           setMessage('');
         }, 5000);
-      } else {
-        setMessage(data.message || 'Something went wrong. Please try again.');
       }
     } catch (err) {
       console.error('Subscription failed:', err);

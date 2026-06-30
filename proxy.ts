@@ -12,10 +12,11 @@ export default clerkMiddleware(async (auth, req) => {
 
     const client = await clerkClient();
     const user = await client.users.getUser(authObj.userId);
-    const email = user.emailAddresses[0]?.emailAddress;
-    const adminEmail = process.env.ADMIN_EMAIL || "kellymaxstudios@gmail.com";
+    const email = user.emailAddresses[0]?.emailAddress?.toLowerCase();
+    const adminEmailsStr = process.env.ADMIN_EMAIL || "kellymaxstudios@gmail.com";
+    const adminEmails = adminEmailsStr.split(",").map((e) => e.trim().toLowerCase());
 
-    if (email !== adminEmail) {
+    if (!email || !adminEmails.includes(email)) {
       // Redirect to home if it's a page request, otherwise return a 403 Forbidden for API requests
       if (req.nextUrl.pathname.startsWith('/api/')) {
         return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });

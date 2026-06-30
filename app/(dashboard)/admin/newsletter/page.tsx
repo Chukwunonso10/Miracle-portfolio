@@ -1,45 +1,21 @@
 import React from 'react';
+import NewsletterDashboardWrapper from '@/components/admin/NewsletterDashboardWrapper';
 import { db } from '@/lib/db';
-import NewsletterManagerClient from '@/components/admin/NewsletterManagerClient';
 
 async function getNewsletterSubscribers() {
-  // Resilient Mock Fallbacks representing initial sample subscribers
-  let subscribers = [
-    {
-      id: 'mock-sub-1',
-      email: 'clark.kent@dailyplanet.com',
-      createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-    },
-    {
-      id: 'mock-sub-2',
-      email: 'tony@starkindustries.com',
-      createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-    },
-    {
-      id: 'mock-sub-3',
-      email: 'selina@wayneart.com',
-      createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-    }
-  ];
-
   try {
-    // Check if database is online
-    await db.$queryRaw`SELECT 1`;
-    const dbSubscribers = await db.newsletterSubscription.findMany({
+    const subs = await db.newsletterSubscription.findMany({
+      select: { id: true, email: true, createdAt: true },
       orderBy: { createdAt: 'desc' }
     });
-    
-    // Serialize date objects for NextJS Server Components
-    subscribers = dbSubscribers.map((sub: any) => ({
+    return subs.map(sub => ({
       ...sub,
       createdAt: sub.createdAt.toISOString()
     }));
   } catch (error) {
-    const errMessage = error instanceof Error ? error.message : String(error);
-    console.warn('DB read failed for newsletter subscriptions, using mock fallbacks:', errMessage);
+    console.error('Failed to query newsletter subscriptions:', error);
+    return [];
   }
-
-  return subscribers;
 }
 
 export const revalidate = 0; // Dynamic route
@@ -56,7 +32,7 @@ export default async function AdminNewsletterPage() {
         </p>
       </div>
 
-      <NewsletterManagerClient initialSubscribers={subscribers} />
+      <NewsletterDashboardWrapper initialSubscribers={subscribers} />
     </div>
   );
 }

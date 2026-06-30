@@ -23,8 +23,10 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'kellymaxstudios@gmail.com';
-  const isAdmin = isSignedIn && user?.primaryEmailAddress?.emailAddress === adminEmail;
+  const adminEmailsStr = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'kellymaxstudios@gmail.com';
+  const adminEmails = adminEmailsStr.split(',').map(e => e.trim().toLowerCase());
+  const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
+  const isAdmin = isSignedIn && userEmail && adminEmails.includes(userEmail);
 
   // Track page scroll to toggle glass backdrop styling
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Trash2, Search, Download, Clock } from 'lucide-react';
 
 interface Subscriber {
@@ -13,6 +13,10 @@ export default function NewsletterManagerClient({ initialSubscribers }: { initia
   const [subscribers, setSubscribers] = useState<Subscriber[]>(initialSubscribers);
   const [search, setSearch] = useState('');
   const [exporting, setExporting] = useState(false);
+
+  useEffect(() => {
+    setSubscribers(initialSubscribers);
+  }, [initialSubscribers]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this subscription?')) return;
