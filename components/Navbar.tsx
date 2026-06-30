@@ -132,6 +132,16 @@ export default function Navbar() {
 
         {/* Mobile Nav Button */}
         <div className="flex md:hidden items-center space-x-4">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="p-2 rounded-full border border-border text-primary hover:text-accent hover:bg-card transition-all duration-300"
+              aria-label="Admin Dashboard"
+            >
+              <LayoutDashboard size={16} />
+            </Link>
+          )}
+
           <button
             onClick={toggleTheme}
             className="p-2 rounded-full border border-border text-muted-foreground hover:text-foreground transition-colors"
